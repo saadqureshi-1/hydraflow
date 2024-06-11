@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2>Submit Daily Report</h2>
+        <form method="post">
+            <div class="form-group">
+                <label for="date">Date</label>
+                <input type="date" class="form-control" name="date" required>
+            </div>
+            <div class="form-group">
+                <label for="tasks_completed">Tasks Completed</label>
+                <textarea class="form-control" name="tasks_completed" placeholder="Tasks completed today..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="challenges_faced">Challenges Faced</label>
+                <textarea class="form-control" name="challenges_faced" placeholder="Challenges faced today..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="hours_worked">Hours Worked</label>
+                <input type="number" class="form-control" name="hours_worked" step="0.1" required>
+            </div>
+            <div class="form-group">
+                <label for="additional_notes">Additional Notes</label>
+                <textarea class="form-control" name="additional_notes" placeholder="Any additional notes..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+        <h2 class="mt-5">Your Reports</h2>
+        <ul class="list-group">
+            {% for report in current_user.reports %}
+                <li class="list-group-item">
+                    <strong>{{ report.date }}:</strong> <br>
+                    <strong>Tasks Completed:</strong> {{ report.tasks_completed }} <br>
+                    <strong>Challenges Faced:</strong> {{ report.challenges_faced }} <br>
+                    <strong>Hours Worked:</strong> {{ report.hours_worked }} <br>
+                    <strong>Additional Notes:</strong> {{ report.additional_notes }} <br>
+                    <small>Submitted on {{ report.timestamp }}</small>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
