@@ -17,7 +17,7 @@ RUN pip install gunicorn
 COPY . .
 
 # Expose the port that the Flask app runs on
-EXPOSE 5000
+EXPOSE 4000
 
 # Define the command to run the application
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "run:app"]
