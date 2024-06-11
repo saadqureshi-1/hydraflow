@@ -1,4 +1,4 @@
-```markdown
+
 # Daily Report Flask Application
 
 This is a Flask application for submitting and managing daily reports. The application includes user authentication and allows team members to submit their daily work reports. The application uses SQLite for database storage and is containerized using Docker.
