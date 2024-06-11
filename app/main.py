@@ -65,3 +65,10 @@ def index():
         db.session.commit()
         flash('Report submitted!')
     return render_template('index.html')
+
+@main.route('/report', methods=['GET', 'POST'])
+@login_required
+def report():
+    return render_template('report.html')
+    
+    
