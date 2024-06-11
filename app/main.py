@@ -23,7 +23,8 @@ def register():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-        user = User(email=email)
+        is_admin=request.form['admin']
+        user = User(email=email,is_admin=is_admin)
         user.set_password(password)
         db.session.add(user)
         db.session.commit()

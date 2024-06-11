@@ -8,6 +8,7 @@ __# Byte-compiled / optimized / DLL files
 *.so
 
 # Distribution / packaging
+migrations/
 .Python
 env/
 venv/

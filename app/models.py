@@ -6,6 +6,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(150), unique=True, nullable=False)
     password_hash = db.Column(db.String(150), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False, nullable=False)
     reports = db.relationship('Report', backref='author', lazy=True)
 
     def set_password(self, password):
@@ -13,7 +14,9 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-
+    def is_admin_user(self):
+        return self.is_admin
+    
 class Report(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False)
