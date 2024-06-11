@@ -8,6 +8,9 @@ main = Blueprint('main', __name__)
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        flash('You are already logged in!')
+        return redirect(url_for('main.index'))
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
