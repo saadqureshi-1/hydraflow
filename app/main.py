@@ -23,6 +23,10 @@ def register():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
+        existing_user=User.query.filter_by(email=email).first()
+        if existing_user:
+            flash("User with this email already exists.")
+            return redirect(url_for('main.register')) 
         user = User(email=email)
         user.set_password(password)
         db.session.add(user)
