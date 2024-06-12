@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_mail import Mail
+from flask_migrate import Migrate
 import logging
 # from dotenv import load_dotenv
 import os
@@ -32,6 +33,7 @@ def create_app():
 
     db.init_app(app)
     mail.init_app(app)
+    migrate = Migrate(app, db)
 
     login_manager = LoginManager()
     login_manager.login_view = 'main.login'
