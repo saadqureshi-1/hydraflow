@@ -2,8 +2,4 @@ Flask
 Flask-SQLAlchemy
 Flask-Login
 gunicorn
-<<<<<<< HEAD
 Flask-Migrate
-=======
-flask_migrate
->>>>>>> c7760e510b9538c782189aa43b5e810e1bcd1e07
