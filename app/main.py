@@ -77,6 +77,9 @@ def report():
 @main.route('/all_report', methods=['GET'])
 @login_required
 def all_report():
+    if not current_user.is_admin:
+        flash("You are not an admin!")
+        return redirect(url_for('main.index'))
     reports=Report.query.all()
     users = User.query.all()
     return render_template('all_reports.html', reports=reports, users=users)
