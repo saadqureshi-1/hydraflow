@@ -7,6 +7,13 @@ from flask_mail import Message
 
 main = Blueprint('main', __name__)
 
+@main.route('/', methods=['GET'])
+def index():
+    return render_template('index.html') 
+@main.route('/about_us', methods=['GET'])
+def about_us():
+    return render_template('about_us.html') 
+
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -25,22 +32,18 @@ def login():
         flash('Invalid credentials')
     return render_template('login.html')
 
-@main.route('/send_test_email')
-def send_test_email():
-    try:
-        msg = Message('Test Email', sender=current_app.config['MAIL_USERNAME'], recipients=['dilawaizkhan08@gmail.com'])
-        msg.body = 'This is a test email sent from the Flask application.'
-        mail.send(msg)
-        return 'Test email sent!'
-    except Exception as e:
-        current_app.logger.error(f"Failed to send email: {e}")
-        return f"Failed to send email: {e}"
+
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
+    if current_user.is_authenticated:
+        logout_user()
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
+        if not email.endswith('@thehexaa.com'):
+            flash("Please enter a valid @thehexaa.com email address!")
+            return redirect(url_for('main.register')) 
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             flash("User with this email already exists.")
@@ -78,9 +81,9 @@ def logout():
     logout_user()
     return redirect(url_for('main.login'))
 
-@main.route('/', methods=['GET', 'POST'])
+@main.route('/add_report', methods=['GET', 'POST'])
 @login_required
-def index():
+def add_report():
     if request.method == 'POST':
         date_str = request.form['date']
         tasks_completed = request.form['tasks_completed']
@@ -102,7 +105,7 @@ def index():
         db.session.add(report)
         db.session.commit()
         flash('Report submitted!')
-    return render_template('index.html')
+    return render_template('add_report.html')
 
 @main.route('/report', methods=['GET'])
 @login_required
@@ -114,7 +117,7 @@ def report():
 def all_report():
     if not current_user.is_admin:
         flash("You are not an admin!")
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.add_report'))
     reports=Report.query.all()
     users = User.query.all()
     return render_template('all_reports.html', reports=reports, users=users)
