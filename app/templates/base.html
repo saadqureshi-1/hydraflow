@@ -9,16 +9,20 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
     {% block head %}{% endblock %}
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="{{ url_for('main.index') }}">Daily Reports</a>
+        <a class="navbar-brand" href="{{ url_for('main.add_report') }}">Daily Reports</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.index') }}">Home</a>
+            </li>
             {% if current_user.is_authenticated%}
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('main.index') }}">Home</a>
+                    <a class="nav-link" href="{{ url_for('main.add_report') }}">Add Report</a>
                 </li>
                  <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('main.report') }}"> My Reports</a>
@@ -29,6 +33,9 @@
                 </li>
                 {%endif%}
             {%endif%}
+            <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.about_us') }}">About Us</a>
+            </li>
             </ul>
             <ul class="navbar-nav ml-auto">
                 {% if current_user.is_authenticated %}
@@ -78,12 +85,14 @@
   <footer class="py-3 my-4">
     <ul class="nav justify-content-center border-bottom pb-3 mb-3">
       <li class="nav-item"><a href="{{ url_for('main.index') }}" class="nav-link px-2 text-muted">Home</a></li>
-      <li class="nav-item"><a href="{{ url_for('main.report') }}" class="nav-link px-2 text-muted">Report</a></li>
-      <li class="nav-item"><a href="{{ url_for('main.index') }}" class="nav-link px-2 text-muted">Pricing</a></li>
-      <li class="nav-item"><a href="{{ url_for('main.index') }}" class="nav-link px-2 text-muted">FAQs</a></li>
-      <li class="nav-item"><a href="{{ url_for('main.index') }}" class="nav-link px-2 text-muted">About</a></li>
+      <li class="nav-item"><a href="{{ url_for('main.add_report') }}" class="nav-link px-2 text-muted">Add Report</a></li>
+      <li class="nav-item"><a href="{{ url_for('main.report') }}" class="nav-link px-2 text-muted">My Reports</a></li>
+      {%if current_user.is_admin%}
+      <li class="nav-item"><a href="{{ url_for('main.all_report') }}" class="nav-link px-2 text-muted">All Reports</a></li>
+      {%endif%}
+      <li class="nav-item"><a href="{{ url_for('main.about_us') }}" class="nav-link px-2 text-muted">About Us</a></li>
     </ul>
-    <p class="text-center text-muted">© 2022 Company, Inc</p>
+    <p class="text-center text-muted">Copyright © 2024 The Hexaa Pvt. Ltd.</p>
   </footer>
 </div>
 {% block scripts %}{% endblock %}
