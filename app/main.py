@@ -69,9 +69,16 @@ def index():
         flash('Report submitted!')
     return render_template('index.html')
 
-@main.route('/report', methods=['GET', 'POST'])
+@main.route('/report', methods=['GET'])
 @login_required
 def report():
     return render_template('report.html')
+
+@main.route('/all_report', methods=['GET'])
+@login_required
+def all_report():
+    reports=Report.query.all()
+    users = User.query.all()
+    return render_template('all_reports.html', reports=reports, users=users)
     
     
