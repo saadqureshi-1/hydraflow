@@ -3,3 +3,4 @@ Flask-SQLAlchemy
 Flask-Login
 gunicorn
 Flask-Migrate
+flask_mail
