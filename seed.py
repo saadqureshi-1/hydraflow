@@ -3,7 +3,7 @@ from app.models import User
 
 def seed_admin_user():
     # Create an admin user
-    email="admin@gmail.com"
+    email="admin@thehexaa.com"
     password="admin"
     admin_user = User(
         email=email,

@@ -28,7 +28,7 @@ def login():
                 flash('Please verify your email address before logging in.')
                 return redirect(url_for('main.login'))
             login_user(user)
-            return redirect(url_for('main.add_report'))
+            return redirect(url_for('main.index'))
         flash('Invalid credentials')
     return render_template('login.html')
 
@@ -36,9 +36,14 @@ def login():
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
+    if current_user.is_authenticated:
+        logout_user()
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
+        if not email.endswith('@thehexaa.com'):
+            flash("Please enter a valid @thehexaa.com email address!")
+            return redirect(url_for('main.register')) 
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             flash("User with this email already exists.")
