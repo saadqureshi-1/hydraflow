@@ -3,19 +3,22 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_mail import Mail
 import logging
+from dotenv import load_dotenv
+import os
 
 db = SQLAlchemy()
 mail = Mail()
+load_dotenv()
 
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'your_secret_key'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
-    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+    app.config['MAIL_SERVER'] = 'smtp.thehexaa.com'
     app.config['MAIL_PORT'] = 587
     app.config['MAIL_USE_TLS'] = True
-    app.config['MAIL_USERNAME'] = 'dilawaizkhan08@gmail.com'
-    app.config['MAIL_PASSWORD'] = 'faav dgub dhbo neal'
+    app.config['MAIL_USERNAME'] = os.getenv('EMAIL_HOST')
+    app.config['MAIL_PASSWORD'] = os.getenv('EMAIL_PASSWORD')
 
     db.init_app(app)
     mail.init_app(app)
