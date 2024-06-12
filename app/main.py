@@ -32,16 +32,7 @@ def login():
         flash('Invalid credentials')
     return render_template('login.html')
 
-@main.route('/send_test_email')
-def send_test_email():
-    try:
-        msg = Message('Test Email', sender=current_app.config['MAIL_USERNAME'], recipients=['dilawaizkhan08@gmail.com'])
-        msg.body = 'This is a test email sent from the Flask application.'
-        mail.send(msg)
-        return 'Test email sent!'
-    except Exception as e:
-        current_app.logger.error(f"Failed to send email: {e}")
-        return f"Failed to send email: {e}"
+
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
