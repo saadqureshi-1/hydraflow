@@ -6,6 +6,13 @@ from . import db
 
 main = Blueprint('main', __name__)
 
+@main.route('/', methods=['GET'])
+def index():
+    return render_template('index.html') 
+@main.route('/about_us', methods=['GET'])
+def about_us():
+    return render_template('about_us.html') 
+
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -17,7 +24,7 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user and user.check_password(password):
             login_user(user)
-            return redirect(url_for('main.index'))
+            return redirect(url_for('main.add_report'))
         flash('Invalid credentials')
     return render_template('login.html')
 
@@ -43,9 +50,9 @@ def logout():
     logout_user()
     return redirect(url_for('main.login'))
 
-@main.route('/', methods=['GET', 'POST'])
+@main.route('/add_report', methods=['GET', 'POST'])
 @login_required
-def index():
+def add_report():
     if request.method == 'POST':
         date_str = request.form['date']
         tasks_completed = request.form['tasks_completed']
@@ -67,7 +74,7 @@ def index():
         db.session.add(report)
         db.session.commit()
         flash('Report submitted!')
-    return render_template('index.html')
+    return render_template('add_report.html')
 
 @main.route('/report', methods=['GET'])
 @login_required
@@ -79,7 +86,7 @@ def report():
 def all_report():
     if not current_user.is_admin:
         flash("You are not an admin!")
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.add_report'))
     reports=Report.query.all()
     users = User.query.all()
     return render_template('all_reports.html', reports=reports, users=users)
