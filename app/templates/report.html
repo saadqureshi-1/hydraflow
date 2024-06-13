@@ -1,20 +1,21 @@
- {% extends 'base.html' %}
- {% block title %}
+{% extends 'base.html' %}
+{% block title %}
     My Reports - Daily Report
 {% endblock %}
- {%block content%}
- <h2 class="mt-5">Your Reports</h2>
-        <ul class="list-group">
-            {% for report in current_user.reports %}
-                <li class="list-group-item">
-                    <strong>{{ report.date }}:</strong> <br>
-                    <strong>Tasks Completed:</strong> {{ report.tasks_completed }} <br>
-                    <strong>Challenges Faced:</strong> {{ report.challenges_faced }} <br>
-                    <strong>Hours Worked:</strong> {{ report.hours_worked }} <br>
-                    <strong>Additional Notes:</strong> {{ report.additional_notes }} <br>
-                    <small>Submitted on {{ report.timestamp }}</small>
-                </li>
-            {% endfor %}
-        </ul>
-
- {%endblock%}
+{% block content %}
+    <h2 class="mt-5 text-2xl font-semibold">Your Reports</h2>
+    <ul class="mt-4 space-y-4">
+        {% for report in current_user.reports %}
+            <li class="p-4 bg-white shadow rounded-lg">
+                <strong class="block text-gray-700">{{ report.date }}:</strong>
+                <p class="mt-2">
+                    <span class="block"><strong>Tasks Completed:</strong> {{ report.tasks_completed }}</span>
+                    <span class="block"><strong>Challenges Faced:</strong> {{ report.challenges_faced }}</span>
+                    <span class="block"><strong>Hours Worked:</strong> {{ report.hours_worked }}</span>
+                    <span class="block"><strong>Additional Notes:</strong> {{ report.additional_notes }}</span>
+                </p>
+                <small class="block mt-2 text-gray-500">Submitted on {{ report.timestamp }}</small>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
