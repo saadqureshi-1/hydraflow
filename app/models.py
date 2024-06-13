@@ -2,7 +2,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from . import db
 from itsdangerous import URLSafeTimedSerializer as Serializer
-from flask import current_app
+from flask import request, jsonify, current_app
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -43,3 +43,7 @@ class Report(db.Model):
     additional_notes = db.Column(db.Text, nullable=True)
     timestamp = db.Column(db.DateTime, default=db.func.current_timestamp(), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+
+
+

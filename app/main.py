@@ -4,6 +4,7 @@ from datetime import datetime
 from .models import User, Report
 from . import db, mail
 from flask_mail import Message
+from flask import request, jsonify, current_app
 
 main = Blueprint('main', __name__)
 
@@ -123,4 +124,43 @@ def all_report():
     users = User.query.all()
     return render_template('all_reports.html', reports=reports, users=users)
     
+
+@main.route('/api/reports/', methods=['GET'])
+def get_reports_by_email():
+    email = request.args.get('email')
+    if not email:
+        return jsonify({'error': 'Email parameter is required'}), 400
+    
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    
+    reports = Report.query.filter_by(user_id=user.id).all()
+    return jsonify([{
+        'id': report.id,
+        'author': {'email': report.author.email},
+        'tasks_completed': report.tasks_completed,
+        'challenges_faced': report.challenges_faced,
+        'hours_worked': report.hours_worked,
+        'date': report.date.strftime('%Y-%m-%d')
+    } for report in reports])
+
+
+@main.route('/user_reports_summary', methods=['GET'])
+@login_required
+def user_reports_summary():
+    email = request.args.get('email')
+    if not email:
+        flash('Email parameter is required', 'danger')
+        return redirect(url_for('main.all_report'))
+    
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        flash('User not found', 'danger')
+        return redirect(url_for('main.all_report'))
+
+    reports = Report.query.filter_by(user_id=user.id).all()
+    return render_template('user_reports_summary.html', reports=reports, user=user)
+
+
     
