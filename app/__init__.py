@@ -4,12 +4,9 @@ from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
 import logging
-# from dotenv import load_dotenv
-import os
 
 db = SQLAlchemy()
 mail = Mail()
-# load_dotenv()
 
 def create_app():
     app = Flask(__name__)
@@ -21,8 +18,7 @@ def create_app():
     # app.config['MAIL_USERNAME'] = os.getenv('EMAIL_HOST')
     # app.config['MAIL_PASSWORD'] = os.getenv('EMAIL_PASSWORD')
 
-
-    # Flask-Mail configuration
+    # Configure Flask-Mail
     app.config['MAIL_SERVER'] = 'mail.thehexaa.com'
     app.config['MAIL_PORT'] = 25
     app.config['MAIL_USE_TLS'] = False
@@ -31,6 +27,7 @@ def create_app():
     app.config['MAIL_PASSWORD'] = None
     app.config['MAIL_DEFAULT_SENDER'] = 'daily-reports@thehexaa.com'
 
+    # Initialize extensions
     db.init_app(app)
     mail.init_app(app)
     migrate = Migrate(app, db)
@@ -39,7 +36,7 @@ def create_app():
     login_manager.login_view = 'main.login'
     login_manager.init_app(app)
 
-    from .models import User
+    from .models import User  # Import after db is initialized
 
     @login_manager.user_loader
     def load_user(user_id):
