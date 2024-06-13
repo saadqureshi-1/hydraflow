@@ -37,7 +37,8 @@ def login():
 @main.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        logout_user()
+        flash("You are already logged in!")
+        return redirect(url_for('main.index'))
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
