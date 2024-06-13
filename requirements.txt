@@ -44,4 +44,4 @@ urllib3==2.2.1
 Werkzeug==3.0.3
 yarl==1.9.4
 langchain-groq
-
+python-dotenv==1.0.1
