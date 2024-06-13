@@ -5,6 +5,8 @@ from .models import User, Report
 from . import db, mail
 from flask_mail import Message
 from flask import request, jsonify, current_app
+from app.chat_rag import process_string
+
 
 main = Blueprint('main', __name__)
 
@@ -14,6 +16,21 @@ def index():
 @main.route('/about_us', methods=['GET'])
 def about_us():
     return render_template('about_us.html') 
+
+@main.route('/talk_to_data')
+@login_required
+def talk_to_data():
+    return render_template('talk_to_data.html')
+
+@main.route('/chat', methods=['POST'])
+@login_required
+def chat():
+    user_message = request.json.get('message')
+    bot_response = process_string(user_message)
+    # Implement your bot logic here. For now, we'll use a simple echo bot.
+    bot_response = f"Bot said: {bot_response}"
+    # return bot_response
+    return jsonify({'response': bot_response})
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
