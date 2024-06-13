@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}
+Talk to Data - HydraFlow
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto mt-5">
+    <h1 class="text-2xl font-bold mb-4">Talk to Data</h1>
+    <div class="bg-white shadow-md rounded-lg p-6">
+        <div id="chat-box" class="h-64 overflow-y-auto mb-4 p-4 border border-gray-300 rounded-lg">
+            <!-- Chat messages will be appended here -->
+        </div>
+        <form id="chat-form" class="flex">
+            <input type="text" id="user-input" class="flex-grow border border-gray-300 p-2 rounded-lg" placeholder="Type your message...">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg ml-2">Send</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('chat-form').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const userInput = document.getElementById('user-input');
+        const chatBox = document.getElementById('chat-box');
+
+        // Append user message to chat box
+        const userMessage = document.createElement('div');
+        userMessage.classList.add('text-right', 'mb-2');
+        userMessage.innerHTML = `<span class="bg-blue-100 px-3 py-1 rounded-lg inline-block">${userInput.value}</span>`;
+        chatBox.appendChild(userMessage);
+
+        // Send user message to the server
+        const response = await fetch('/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: userInput.value }),
+        });
+
+        const data = await response.json();
+
+        // Append bot message to chat box
+        const botMessage = document.createElement('div');
+        botMessage.classList.add('text-left', 'mb-2');
+        botMessage.innerHTML = `<span class="bg-gray-100 px-3 py-1 rounded-lg inline-block">${data.response}</span>`;
+        chatBox.appendChild(botMessage);
+
+        // Clear user input
+        userInput.value = '';
+    });
+</script>
+{% endblock %}

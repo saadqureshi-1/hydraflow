@@ -15,6 +15,21 @@ def index():
 def about_us():
     return render_template('about_us.html') 
 
+@main.route('/talk_to_data')
+@login_required
+def talk_to_data():
+    return render_template('talk_to_data.html')
+
+@main.route('/chat', methods=['POST'])
+@login_required
+def chat():
+    user_message = request.json.get('message')
+    
+    # Implement your bot logic here. For now, we'll use a simple echo bot.
+    bot_response = f"You said: {user_message}"
+    
+    return jsonify({'response': bot_response})
+
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
