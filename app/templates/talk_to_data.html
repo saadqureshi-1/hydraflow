@@ -19,37 +19,52 @@ Talk to Data - HydraFlow
 </div>
 
 <script>
+    function scrollChatToBottom() {
+        const chatBox = document.getElementById('chat-box');
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
     document.getElementById('chat-form').addEventListener('submit', async function(event) {
         event.preventDefault();
 
         const userInput = document.getElementById('user-input');
         const chatBox = document.getElementById('chat-box');
 
-        // Append user message to chat box
         const userMessage = document.createElement('div');
         userMessage.classList.add('text-right', 'mb-2');
         userMessage.innerHTML = `<span class="bg-blue-100 px-3 py-1 rounded-lg inline-block">${userInput.value}</span>`;
         chatBox.appendChild(userMessage);
 
-        // Send user message to the server
-        const response = await fetch('/chat', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ message: userInput.value }),
-        });
-
-        const data = await response.json();
-
-        // Append bot message to chat box
-        const botMessage = document.createElement('div');
-        botMessage.classList.add('text-left', 'mb-2');
-        botMessage.innerHTML = `<span class="bg-gray-100 px-3 py-1 rounded-lg inline-block">${data.response}</span>`;
-        chatBox.appendChild(botMessage);
-
-        // Clear user input
+        // Clear user input immediately after appending user message
         userInput.value = '';
+
+        scrollChatToBottom();
+
+        try {
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: userMessage.innerText }), // Send the message content
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+
+            const botMessage = document.createElement('div');
+            botMessage.classList.add('text-left', 'mb-2');
+            botMessage.innerHTML = `<span class="bg-gray-100 px-3 py-1 rounded-lg inline-block">${data.response}</span>`;
+            chatBox.appendChild(botMessage);
+
+            scrollChatToBottom();
+        } catch (error) {
+            console.error('Error:', error);
+            // Handle error scenario here if needed
+        }
     });
 </script>
 {% endblock %}
