@@ -5,29 +5,77 @@ Summary - HydraFlow
 
 {% block content %}
 <div class="container mx-auto p-4">
-    <h2 class="mt-5 text-2xl font-semibold text-center">Generate User Summary</h2>
-    <div class="flex justify-center mt-4">
-        <div class="flex items-end space-x-4">
-            <div class="w-70"> 
+    <h2 class="text-3xl font-semibold text-center my-5">Generate User Summary</h2>
+    
+    <div class="flex justify-center mt-4 mb-8">
+        <div class="flex flex-col md:flex-row items-center space-x-0 md:space-x-4 space-y-4 md:space-y-0">
+            <div class="w-full md:w-auto">
                 <label for="user" class="block text-gray-700">Select User:</label>
-                <select id="user" class="block w-full mt-1 p-2 border border-gray-300 rounded-md h-12"> <!-- Fixed height for the select element -->
+                <select id="user" class="block w-full mt-1 p-2 border border-gray-300 rounded-md">
                     {% for user in users %}
                         <option value="{{ user.id }}">{{ user.email }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <button id="generate-summary" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-35 h-12">
-                Generate
-            </button>
+            <div class="w-full md:w-auto">
+                <button id="generate-summary" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full md:w-auto">
+                    Generate
+                </button>
+            </div>
         </div>
     </div>
-    
-    <div class="mt-8 p-4 bg-gray-100 rounded-lg shadow w-full">
-        <h3 class="text-xl font-semibold">Summary</h3>
-        <div id="loading-message" class="mt-4 text-center text-gray-700 hidden">We are processing your request...</div>
-        <div id="summary-content" class="mt-4 whitespace-pre-wrap"></div>
+
+    <div class="p-4 bg-gray-100 rounded-lg shadow w-full">
+        <h3 class="text-xl font-semibold mb-4">Summary</h3>
+        <div id="loading-message" class="mt-4 text-center hidden">
+            <div class="flex justify-center items-center">
+                <div class="loader"></div>
+                <span class="ml-2 text-gray-700">Processing your request...</span>
+            </div>
+        </div>
+        <div id="summary-content" class="mt-4 whitespace-pre-wrap max-h-96 overflow-y-scroll smooth-scroll always-visible-scrollbar p-4"></div>
     </div>
 </div>
+
+<style>
+.loader {
+    border: 4px solid #f3f3f3; /* Light grey */
+    border-top: 4px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.smooth-scroll {
+    scroll-behavior: smooth;
+}
+
+.always-visible-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #3498db #f3f3f3;
+}
+
+.always-visible-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.always-visible-scrollbar::-webkit-scrollbar-track {
+    background: #f3f3f3;
+}
+
+.always-visible-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #3498db;
+    border-radius: 10px;
+    border: 2px solid #f3f3f3;
+}
+</style>
+
 <script src="https://cdn.jsdelivr.net/npm/showdown/dist/showdown.min.js"></script>
 <script>
 document.getElementById('generate-summary').addEventListener('click', function() {
@@ -52,7 +100,8 @@ document.getElementById('generate-summary').addEventListener('click', function()
         const converter = new showdown.Converter();
         const html = converter.makeHtml(data.summary);
 
-        summaryContent.innerHTML = html;
+        // Apply typewriter effect with auto-scroll
+        typeWriterEffect(html, summaryContent);
     })
     .catch(error => {
         console.error('Error fetching summary:', error);
@@ -60,5 +109,18 @@ document.getElementById('generate-summary').addEventListener('click', function()
         summaryContent.innerHTML = '<p class="text-red-500">An error occurred while fetching the summary. Please try again later.</p>';
     });
 });
+
+function typeWriterEffect(text, element) {
+    element.innerHTML = '';
+    let index = 0;
+    const interval = setInterval(() => {
+        element.innerHTML = text.slice(0, index);
+        index++;
+        element.scrollTop = element.scrollHeight; // Auto-scroll to the bottom
+        if (index > text.length) {
+            clearInterval(interval);
+        }
+    }, 20); // 20ms interval for typewriter effect
+}
 </script>
 {% endblock %}
