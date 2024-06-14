@@ -59,4 +59,5 @@ yarl==1.9.4
 openai
 chromadb
 tiktoken
+
 Faker==25.8.0
