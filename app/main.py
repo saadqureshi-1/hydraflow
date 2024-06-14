@@ -123,7 +123,7 @@ def add_report():
         )
         db.session.add(report)
         db.session.commit()
-        flash('Report submitted!')
+        flash('Report submitted!', 'success')
     return render_template('add_report.html')
 
 @main.route('/report', methods=['GET'])
