@@ -28,7 +28,7 @@ def chat():
     user_message = request.json.get('message')
     bot_response = chat_llm(user_message)
     # Implement your bot logic here. For now, we'll use a simple echo bot.
-    bot_response = f"Bot said: {bot_response}"
+    # bot_response =  bot_response"
     # return bot_response
     return jsonify({'response': bot_response})
 
