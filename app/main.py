@@ -35,7 +35,7 @@ def chat():
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        flash('You are already logged in!')
+        flash('You are already logged in!','info')
         return redirect(url_for('main.index'))
     if request.method == 'POST':
         email = request.form['email']
@@ -43,11 +43,11 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user and user.check_password(password):
             if not user.email_verified:
-                flash('Please verify your email address before logging in.')
+                flash('Please verify your email address before logging in.','warning')
                 return redirect(url_for('main.login'))
             login_user(user)
             return redirect(url_for('main.index'))
-        flash('Invalid credentials')
+        flash('Invalid credentials','danger')
     return render_template('login.html')
 
 
@@ -55,17 +55,17 @@ def login():
 @main.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        flash("You are already logged in!")
+        flash("You are already logged in!",'info')
         return redirect(url_for('main.index'))
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
         if not email.endswith('@thehexaa.com'):
-            flash("Please enter a valid @thehexaa.com email address!")
+            flash("Please enter a valid @thehexaa.com email address!",'warning')
             return redirect(url_for('main.register')) 
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
-            flash("User with this email already exists.")
+            flash("User with this email already exists.",'danger')
             return redirect(url_for('main.register')) 
         user = User(email=email)
         user.set_password(password)
@@ -135,7 +135,7 @@ def report():
 @login_required
 def all_report():
     if not current_user.is_admin:
-        flash("You are not an admin!")
+        flash("You are not an admin!",'danger')
         return redirect(url_for('main.add_report'))
     reports=Report.query.all()
     users = User.query.all()
@@ -167,7 +167,7 @@ def get_reports_by_email():
 @login_required
 def summary():
     if not current_user.is_admin:
-        flash("You are not an admin!")
+        flash("You are not an admin!",'danger')
         return redirect(url_for('main.index'))
     if request.method=='POST':
         data = request.get_json()
@@ -176,7 +176,7 @@ def summary():
         reports = Report.query.filter_by(user_id=user.id).all()
         data_string = ""
         if not reports:
-            flash("No reports are present!")
+            flash("No reports are present!",'info')
             return render_template('summary.html')
         for report in reports:
             data_string += f"Date: {report.date}\n"
