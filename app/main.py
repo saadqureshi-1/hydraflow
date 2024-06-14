@@ -5,7 +5,7 @@ from .models import User, Report
 from . import db, mail
 from flask_mail import Message
 from flask import request, jsonify, current_app
-from app.chat_rag import process_string
+from app.chat_rag import process_string, chat_llm
 
 
 main = Blueprint('main', __name__)
@@ -26,7 +26,7 @@ def talk_to_data():
 @login_required
 def chat():
     user_message = request.json.get('message')
-    bot_response = process_string(user_message)
+    bot_response = chat_llm(user_message)
     # Implement your bot logic here. For now, we'll use a simple echo bot.
     bot_response = f"Bot said: {bot_response}"
     # return bot_response
