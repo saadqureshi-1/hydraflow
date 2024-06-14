@@ -43,3 +43,19 @@ h2 {
     font-size: 1.1rem;
     color: #666;
 }
+
+@keyframes colorShift {
+    0% {
+        color: #4A5568; /* Initial color, e.g., gray-700 */
+    }
+    50% {
+        color: #2B6CB0; /* Intermediate color, e.g., blue-600 */
+    }
+    100% {
+        color: #4A5568; /* Final color, back to initial */
+    }
+}
+
+.animate-colorShift {
+    animation: colorShift 3s ease-in-out infinite;
+}
