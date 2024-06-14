@@ -28,6 +28,7 @@
                             {% if current_user.is_admin %}
                                 <a href="{{ url_for('main.all_report') }}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 text-sm font-medium no-underline">All Reports</a>
                                 <a href="{{ url_for('main.talk_to_data') }}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 text-sm font-medium no-underline">Talk to Data</a>
+                                <a href="{{ url_for('main.summary') }}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 text-sm font-medium no-underline">Summary</a>
                             {% endif %}
                         {% endif %}
                         <a href="{{ url_for('main.about_us') }}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 text-sm font-medium no-underline">About Us</a>
