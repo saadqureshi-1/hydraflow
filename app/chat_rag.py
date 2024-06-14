@@ -161,7 +161,7 @@ def chat_llm(input_string: str) -> str:
     :return: The final output as a string.
     """
     # Get the database schema
-    database_schema = get_sqlite_schema('instance/database.db')
+    database_schema = get_sqlite_schema('instance/db.sqlite3')
     
     # Generate the SQL query based on the input string and database schema
     query = generate_sql_query(input_string, database_schema)
