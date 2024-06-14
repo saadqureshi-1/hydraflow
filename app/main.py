@@ -142,7 +142,7 @@ def all_report():
     return render_template('all_reports.html', reports=reports, users=users)
     
 
-@main.route('/api/reports/', methods=['GET'])
+@main.route('/api/reports/', methods=['GET','POST'])
 def get_reports_by_email():
     email = request.args.get('email')
     if not email:
@@ -163,21 +163,12 @@ def get_reports_by_email():
     } for report in reports])
 
 
-@main.route('/user_reports_summary', methods=['GET'])
+@main.route('/summary', methods=['GET'])
 @login_required
-def user_reports_summary():
-    email = request.args.get('email')
-    if not email:
-        flash('Email parameter is required', 'danger')
-        return redirect(url_for('main.all_report'))
-    
-    user = User.query.filter_by(email=email).first()
-    if not user:
-        flash('User not found', 'danger')
-        return redirect(url_for('main.all_report'))
-
-    reports = Report.query.filter_by(user_id=user.id).all()
-    return render_template('user_reports_summary.html', reports=reports, user=user)
+def summary():
+    if request.method=='POST':
+        return render_template('summary.html')
+    return render_template('summary.html')
 
 
     
