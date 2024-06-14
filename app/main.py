@@ -1,12 +1,12 @@
+from datetime import datetime
 from flask import Blueprint, render_template, redirect, url_for, request, flash, current_app
 from flask_login import login_user, login_required, logout_user, current_user
-from datetime import datetime
-from .models import User, Report
-from . import db, mail
 from flask_mail import Message
 from flask import request, jsonify, current_app
 from app.chat_rag import process_string, chat_llm
-
+from .models import User, Report
+from . import db, mail
+from .rag import get_summary
 
 main = Blueprint('main', __name__)
 
@@ -123,7 +123,7 @@ def add_report():
         )
         db.session.add(report)
         db.session.commit()
-        flash('Report submitted!')
+        flash('Report submitted!', 'success')
     return render_template('add_report.html')
 
 @main.route('/report', methods=['GET'])
@@ -142,7 +142,7 @@ def all_report():
     return render_template('all_reports.html', reports=reports, users=users)
     
 
-@main.route('/api/reports/', methods=['GET'])
+@main.route('/api/reports/', methods=['GET','POST'])
 def get_reports_by_email():
     email = request.args.get('email')
     if not email:
@@ -163,21 +163,31 @@ def get_reports_by_email():
     } for report in reports])
 
 
-@main.route('/user_reports_summary', methods=['GET'])
+@main.route('/summary', methods=['GET','POST'])
 @login_required
-def user_reports_summary():
-    email = request.args.get('email')
-    if not email:
-        flash('Email parameter is required', 'danger')
-        return redirect(url_for('main.all_report'))
-    
-    user = User.query.filter_by(email=email).first()
-    if not user:
-        flash('User not found', 'danger')
-        return redirect(url_for('main.all_report'))
-
-    reports = Report.query.filter_by(user_id=user.id).all()
-    return render_template('user_reports_summary.html', reports=reports, user=user)
+def summary():
+    if not current_user.is_admin:
+        flash("You are not an admin!")
+        return redirect(url_for('main.index'))
+    if request.method=='POST':
+        data = request.get_json()
+        user_id = data.get('userId')
+        user=User.query.get(user_id)
+        reports = Report.query.filter_by(user_id=user.id).all()
+        data_string = ""
+        if not reports:
+            flash("No reports are present!")
+            return render_template('summary.html')
+        for report in reports:
+            data_string += f"Date: {report.date}\n"
+            data_string += f"- Tasks Completed: {report.tasks_completed}\n"
+            data_string += f"- Challenges Faced: {report.challenges_faced}\n"
+            data_string += f"- Hours Worked: {report.hours_worked}\n"
+            data_string += f"- Additional Notes: {report.additional_notes}\n\n"
+        summary=get_summary(user.email,data_string)
+        return jsonify({'summary': summary}), 200
+    users=User.query.all()
+    return render_template('summary.html',users=users)
 
 
     
