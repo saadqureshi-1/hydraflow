@@ -1,12 +1,12 @@
+from datetime import datetime
 from flask import Blueprint, render_template, redirect, url_for, request, flash, current_app
 from flask_login import login_user, login_required, logout_user, current_user
-from datetime import datetime
-from .models import User, Report
-from . import db, mail
 from flask_mail import Message
 from flask import request, jsonify, current_app
 from app.chat_rag import process_string
-
+from .models import User, Report
+from . import db, mail
+from .rag import get_summary
 
 main = Blueprint('main', __name__)
 
@@ -163,12 +163,31 @@ def get_reports_by_email():
     } for report in reports])
 
 
-@main.route('/summary', methods=['GET'])
+@main.route('/summary', methods=['GET','POST'])
 @login_required
 def summary():
+    if not current_user.is_admin:
+        flash("You are not an admin!")
+        return redirect(url_for('main.index'))
     if request.method=='POST':
-        return render_template('summary.html')
-    return render_template('summary.html')
+        data = request.get_json()
+        user_id = data.get('userId')
+        user=User.query.get(user_id)
+        reports = Report.query.filter_by(user_id=user.id).all()
+        data_string = ""
+        if not reports:
+            flash("No reports are present!")
+            return render_template('summary.html')
+        for report in reports:
+            data_string += f"Date: {report.date}\n"
+            data_string += f"- Tasks Completed: {report.tasks_completed}\n"
+            data_string += f"- Challenges Faced: {report.challenges_faced}\n"
+            data_string += f"- Hours Worked: {report.hours_worked}\n"
+            data_string += f"- Additional Notes: {report.additional_notes}\n\n"
+        summary=get_summary(user.email,data_string)
+        return jsonify({'summary': summary}), 200
+    users=User.query.all()
+    return render_template('summary.html',users=users)
 
 
     
