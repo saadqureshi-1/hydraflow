@@ -19,7 +19,15 @@ def process_string(input_string: str, data: str) -> str:
     )
 
     # Define the system and human messages
-    system = "You are a helpful assistant. Provided data is about the user which is being refered here, please assume whoever in the query is being referred the data provided is of the user which might contain some id. Use the following data for context: {context}"
+    system = """
+        - You are a helpful assistant.
+        - Provided data is about the user who is being referred to in the query.
+        - Assume the data provided is of the user, which might contain some ID.
+        - Use the following data for context: {context}.
+        - Respond only in markdown.
+        - Make sure your response is concise and crisp.
+        """
+
     human = "{text}"
 
     # Create a prompt template from the system and human messages
