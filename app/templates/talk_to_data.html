@@ -1,75 +1,143 @@
 {% extends "base.html" %}
 
-{% block title %}
-Talk to Data - HydraFlow
-{% endblock %}
+{% block title %}Talk to Data - HydraFlow{% endblock %}
 
 {% block content %}
 <div class="container mx-auto mt-5">
-    <h1 class="text-2xl font-bold mb-4">Talk to Data</h1>
-    <div class="bg-white shadow-md rounded-lg p-6">
-        <div id="chat-box" class="h-64 overflow-y-auto mb-4 p-4 border border-gray-300 rounded-lg">
+    <h1 id="chat-form-label" class="text-3xl font-bold mb-6 text-center text-indigo-600">Talk to Data</h1>
+    <div class="bg-white shadow-md rounded-lg p-6 max-w-3xl mx-auto">
+        <div id="chat-box" class="h-96 overflow-y-auto mb-4 p-4 border border-gray-300 rounded-lg bg-gray-50" aria-live="polite">
             <!-- Chat messages will be appended here -->
         </div>
-        <form id="chat-form" class="flex">
-            <input type="text" id="user-input" class="flex-grow border border-gray-300 p-2 rounded-lg" placeholder="Type your message...">
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg ml-2">Send</button>
+        <form id="chat-form" class="flex" role="form" aria-labelledby="chat-form-label">
+            <input type="text" id="user-input" class="flex-grow border border-gray-300 p-3 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Type your message..." aria-label="User input">
+            <button type="submit" class="bg-indigo-500 text-white px-6 py-3 rounded-r-lg hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-label="Send message">Send</button>
         </form>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/showdown/dist/showdown.min.js"></script>
-<script>
-    function scrollChatToBottom() {
-        const chatBox = document.getElementById('chat-box');
-        chatBox.scrollTop = chatBox.scrollHeight;
+<style>
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+}
+
+.typing-indicator span {
+    width: 8px;
+    height: 8px;
+    margin: 0 2px;
+    background-color: #ccc;
+    border-radius: 50%;
+    display: inline-block;
+    animation: typing-bounce 1s infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing-bounce {
+    0%, 60%, 100% {
+        transform: translateY(0);
     }
+    30% {
+        transform: translateY(-6px);
+    }
+}
+</style>
 
-    document.getElementById('chat-form').addEventListener('submit', async function(event) {
-        event.preventDefault();
-
+<script src="https://cdn.jsdelivr.net/npm/showdown/dist/showdown.min.js" async></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const chatForm = document.getElementById('chat-form');
         const userInput = document.getElementById('user-input');
+        const sendButton = chatForm.querySelector('button[type="submit"]');
         const chatBox = document.getElementById('chat-box');
+        const converter = new showdown.Converter();
 
-        const userMessage = document.createElement('div');
-        userMessage.classList.add('text-right', 'mb-2');
-        userMessage.innerHTML = `<span class="bg-blue-100 px-3 py-1 rounded-lg inline-block">${userInput.value}</span>`;
-        chatBox.appendChild(userMessage);
+        const appendMessage = (message, isUser = true) => {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('mb-3', 'flex', isUser ? 'justify-end' : 'justify-start');
+            messageDiv.innerHTML = `<span class="${isUser ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-200 text-gray-800'} px-4 py-2 rounded-lg inline-block max-w-xs break-words">${message}</span>`;
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        };
 
-        // Clear user input immediately after appending user message
-        userInput.value = '';
+        const typeMessage = (htmlContent) => {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('mb-3', 'flex', 'justify-start');
+            const spanElement = document.createElement('span');
+            spanElement.classList.add('bg-gray-200', 'text-gray-800', 'px-4', 'py-2', 'rounded-lg', 'inline-block', 'max-w-xs', 'break-words');
+            messageDiv.appendChild(spanElement);
 
-        scrollChatToBottom();
+            const loadingIndicator = document.createElement('div');
+            loadingIndicator.id = 'loading';
+            loadingIndicator.classList.add('flex', 'justify-start', 'mb-3');
+            loadingIndicator.innerHTML = `
+                <div class="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>`;
+            chatBox.appendChild(loadingIndicator);
+            chatBox.scrollTop = chatBox.scrollHeight;
 
-        try {
-            const response = await fetch('/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ message: userMessage.innerText }), // Send the message content
-            });
+            let index = 0;
+            const interval = setInterval(() => {
+                spanElement.innerHTML = htmlContent.slice(0, index);
+                index++;
+                chatBox.scrollTop = chatBox.scrollHeight; // Keep scrolling to the bottom
+                if (index > htmlContent.length) {
+                    clearInterval(interval);
+                    chatBox.removeChild(loadingIndicator);
+                    chatBox.appendChild(messageDiv);
+                }
+            }, 20); // Adjust typing speed here
+        };
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+        const toggleLoading = (isLoading) => {
+            let loadingIndicator = document.getElementById('loading');
+            if (loadingIndicator) {
+                loadingIndicator.classList.toggle('hidden', !isLoading);
             }
+            userInput.disabled = isLoading;
+            sendButton.disabled = isLoading;
+        };
 
-            const data = await response.json();
+        chatForm.addEventListener('submit', async event => {
+            event.preventDefault();
+            const message = userInput.value.trim();
+            if (!message) return;
 
-            // Convert markdown to HTML using showdown.js
-            const converter = new showdown.Converter();
-            const html = converter.makeHtml(data.response);
+            appendMessage(message);
+            userInput.value = '';
+            userInput.focus();
+            toggleLoading(true);
 
-            const botMessage = document.createElement('div');
-            botMessage.classList.add('text-left', 'mb-2');
-            botMessage.innerHTML = `<span class="bg-gray-100 px-3 py-1 rounded-lg inline-block">${html}</span>`;
-            chatBox.appendChild(botMessage);
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
 
-            scrollChatToBottom();
-        } catch (error) {
-            console.error('Error:', error);
-            // Handle error scenario here if needed
-        }
+                if (!response.ok) throw new Error('Network response was not ok');
+
+                const data = await response.json();
+                toggleLoading(false);
+                const htmlResponse = converter.makeHtml(data.response);
+                typeMessage(htmlResponse);
+            } catch (error) {
+                console.error('Error:', error);
+                toggleLoading(false);
+                appendMessage('An error occurred. Please try again later.', false);
+            }
+        });
     });
 </script>
 {% endblock %}
