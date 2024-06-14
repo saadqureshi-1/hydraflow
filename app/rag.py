@@ -10,7 +10,7 @@ load_dotenv()
 API_KEY = os.getenv("GROQ_API_KEY")
 
 def get_summary(user_name , data):
-    chat = ChatGroq(temperature=0, groq_api_key=API_KEY, model_name="llama3-70b-8192")
+    chat = ChatGroq(temperature=0, groq_api_key=API_KEY, model_name="llama3-70b-8192",  api_key="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" )
    
 
     prompt = ChatPromptTemplate.from_messages(
