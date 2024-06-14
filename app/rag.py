@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 API_KEY = os.getenv("GROQ_API_KEY")
 
-def get_summary(user_id , data):
+def get_summary(user_name , data):
     chat = ChatGroq(temperature=0, groq_api_key=API_KEY, model_name="llama3-70b-8192")
    
 
@@ -18,8 +18,8 @@ def get_summary(user_id , data):
             (
                 "system",
                 """
-                You are a helpful assistant tasked with providing a detailed weekly work progress summary for the user with the name '{user_name}'.
-                Your goal is to analyze and summarize the user's weekly work feedback.
+                You are a helpful assistant tasked with providing a detailed work progress summary for the user with the name '{user_name}'.
+                Your goal is to analyze and summarize the user's work feedback.
 
                 Weekly Data : `{user_data}`
 
@@ -45,7 +45,7 @@ def get_summary(user_id , data):
     chain = prompt | chat
     result = chain.invoke(
         {
-            "user_name": {user_id},
+            "user_name": {user_name},
             "user_data": {data},
             "input": "Provide Summary",
         }
