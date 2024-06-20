@@ -68,6 +68,23 @@
             chatBox.scrollTop = chatBox.scrollHeight;
         };
 
+        const typeWriterEffect = (text, element) => {
+            element.innerHTML = '';
+            let index = 0;
+            const interval = setInterval(() => {
+                element.innerHTML = text.slice(0, index);
+                index++;
+                element.scrollTop = element.scrollHeight; // Auto-scroll to the bottom
+
+                // Ensure the chatBox scrolls to the bottom as well
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+                if (index > text.length) {
+                    clearInterval(interval);
+                }
+            }, 50); // Adjust the interval delay to control typing speed
+        };
+
         const typeMessage = (htmlContent) => {
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('mb-3', 'flex', 'justify-start');
@@ -87,17 +104,10 @@
             chatBox.appendChild(loadingIndicator);
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            let index = 0;
-            const interval = setInterval(() => {
-                spanElement.innerHTML = htmlContent.slice(0, index);
-                index++;
-                chatBox.scrollTop = chatBox.scrollHeight; // Keep scrolling to the bottom
-                if (index > htmlContent.length) {
-                    clearInterval(interval);
-                    chatBox.removeChild(loadingIndicator);
-                    chatBox.appendChild(messageDiv);
-                }
-            }, 20); // Adjust typing speed here
+            // Start typewriter effect after loading indicator
+            typeWriterEffect(htmlContent, spanElement);
+            chatBox.removeChild(loadingIndicator);
+            chatBox.appendChild(messageDiv);
         };
 
         const toggleLoading = (isLoading) => {
