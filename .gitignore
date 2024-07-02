@@ -116,3 +116,5 @@ dmypy.json
 
 # pyright
 .pyright/
+
+filter-repo-replace.sh
